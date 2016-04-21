@@ -1,0 +1,36 @@
+{
+  "name": "node-spiders ",
+  "version": "1.0.0",
+  "description": "捉取WEB 内容",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teng14"
+  },
+  "keywords": [
+    "node",
+    "excel",
+    "html",
+    "excel",
+    "transform",
+    "html"
+  ],
+  "author": "Teng",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "ejs": "2.4.1 ",
+    "multer": "^0.1.8",
+    "node-xlsx": "^0.6.0"
+  },
+  "devDependencies": {
+    "cheerio": "^0.20.0",
+    "cors": "^2.7.1",
+    "mongoose": "^4.4.12",
+    "when": "^3.7.7"
+  }
+}

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Web 爬虫</title>
+	
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			font-size: 12px;
+		}
+		.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden}
+		.clearfix{*+height:1%;}
+		aside{
+			padding: 10;
+			width:  400px;
+			height: 100%
+		}
+		aside h3{
+			height: 30px;
+			line-height: 30px;
+			padding-bottom: 10px;
+			font-size: 16px;
+			font-weight: bold;
+		}
+		aside .box-btn{
+			padding: 0 10px;
+			clear: both;
+		}
+		aside .template{
+			padding: 10px;
+		}
+		#template{
+			padding: 10px;
+			height: 500px;
+			width: 100%;
+			box-sizing: border-box;
+			overflow-x: auto;
+		}
+		#getFile{
+			float: left;
+		}
+		#submit{
+			float: right;
+			padding: 0 10px;
+		}
+		section{
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 410px;
+			right: 10px;
+			height: 100%;
+			overflow-y: auto;
+		}
+		section h3{
+			height: 64px;
+			line-height: 76px;
+		}
+		#show-code{
+			position: absolute;
+			padding: 10px;
+			left: 0;
+			right: 0;
+			top: 64px;
+			bottom: 10px;
+			border: 1px solid #999;
+			overflow: auto;
+		}
+		#show-code .syntaxhighlighter{
+			height: 100%;
+		}
+		.tips{
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			display: block;
+			text-align: center;
+			font-size: 30px;
+		}
+		.loading{
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			display: block;
+			width: 62px;
+			height: 122px;
+			margin-top: -61px;
+			margin-left: -31px;
+			background: url(../images/loading.gif) no-repeat;
+		}
+	</style>
+	<script src="/js/jquery-2.1.1.min.js"></script>
+	<script src="/js/jquery.form.js"></script>
+
+
+	  <script type="text/javascript" src="/js/brush.js"></script>
+<link type="text/css" rel="stylesheet" href="/css/shCore.css"/>
+<link type="text/css" rel="stylesheet" href="/css/shThemeDefault.css"/>
+	<script type="text/javascript">
+		SyntaxHighlighter.config.clipboardSwf = '/js/clipboard.swf';
+		SyntaxHighlighter.all();
+	</script>
+
+</head>
+<body>
+	<div id="wrap">
+		<div id="tips"></div>
+		<aside>
+		<form id="fromInput" method="get" action="/handle" enctype="multipart/form-data">
+			<div class="template">
+				<h3>地址</h3>
+				<textarea name="url" id="template" class="html"></textarea>
+				
+			</div>
+			<div class="box-btn clearfix">
+				<p>
+					
+					<label for="submit"></label><input id="submit" type="button" name="submit" value="生成" data-type="1">
+				</p>
+			</div>
+			<div style="padding: 10px; margin:15px 0; line-height: 30px; clear: both;" class="clearfix">
+				<p style="font-weight: bold">模板说明 </p>
+				<p>例子： 匹配 name</p>
+				<pre class="brush: html;"><div><h1>{title}</h1><p>{content}</p></div></pre>
+				<p>例子： 匹配列</p>
+				<pre class="brush: html;"><div><h1>{1}</h1><p>{2}</p></div></pre>
+				<p>例子： 常用</p>
+				<pre class="brush: html;">
+					<div class="pro" onMouseOver="mouseOver($(this))" onMouseOut="mouseOut($(this))">
+						<p class="pic">
+						<a href="{6}">
+						<img src="{8}_300X300" /></a>
+						<a class="bottons tcenter" href="{6}">即将开始</a> </p>
+						<p class="proname tleft">
+						<a href="{6}">{1}</a> </p>
+						<p class="company">{3}</p>
+						<p class="pro_info tleft">{2}<span class="red"></span></p>
+						<p class="bottoms">
+						<span class="price tleft"name="price">¥{5}<em class="price_del">¥{4}</em></span>
+						 <span class="goodsid" ref="{7}"></span>
+						<span><a class="buynow" href="{6}">马上抢</a></span> </p>
+					</div>
+				</pre>
+
+			</div>
+		</form>
+		</aside>
+		<section>
+			<h3>生成内容 <span style="float: right;color: #999;">--by Laoma</span></h3>
+			<div id="show-code">
+			</div>
+			
+		</section>
+	</div>
+
+	<script>
+		$(function(){
+			$.ajax({
+				url: '/handle',
+				data:{url:'http://faxian.smzdm.com/p1/'},
+				type: 'GET',
+				dataType: 'JSONP',
+				success: function(data){
+					console.log(data)
+				}
+			})
+			//请求
+			$('#fromInput').on('click', '#submit',function(){
+				var form = $('#fromInput')
+					_type = $(this).attr('data-type');
+				getExcel(form, _type)
+				return false;
+			});
+		});
+		
+		function getExcel(ele,type){
+			var errMsg = {
+			emptyTemp 	: '<span class="tips" style="color:#ff0000">请输入模板内容！！！</span>', 
+			errTemp 	: '<span class="tips" style="color:#ff0000">模板格式有错！！！</span>', 
+			emptyfile 	: '<span class="tips" style="color:#ff0000">请选择.xlsx文件!!</span>', 
+			sendMsg 	: '<span class="loading"></span>'
+			}
+			var showCode  = $('#show-code');
+			var tips      = $('#tips');
+			var template  = $('#template').val();
+			var filesPath = $('#getFile').val();
+			var hastemp   = false;		
+			ele.ajaxSubmit({
+				beforeSubmit: function(){
+					alert(1)
+					showCode.html(errMsg.sendMsg);	
+				},
+				success: function(data){
+					var html;
+						console.log(data)
+						//showCode.html('<pre style="height: 1000px;"  class="brush: html;">'+html+'</pre>');
+						SyntaxHighlighter.highlight();						
+				}
+			});
+		}
+
+	</script>
+</body>
+</html>
