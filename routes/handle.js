@@ -1,8 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var cheerio	= require('cheerio');
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://www.fireyun.cn/smzdm');
+
 module.exports = function(app){
 	app.get('/handle', function(req, res){
 		var url = req.query.url;

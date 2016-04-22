@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>捉取</title>
+</head>
+<body>
+	<div class="contain">
+		<div class="left">
+			<form action="getweb" method="get">
+				<label for="url">地址：</label>
+				<textarea name="url" id="url" cols="30" rows="10">http://faxian.smzdm.com/p1/</textarea>
+				<input id="submit" type="button" value="捉取">
+			</form>
+		</div>
+		<div class="right">
+			<div id="result">
+				
+			</div>
+		</div>
+	</div>
+	<script src="/js/jquery-2.1.1.min.js"></script>
+	<script src="http://apps.bdimg.com/libs/socket.io/0.9.16/socket.io.min.js"></script>
+	<script>
+		$(function(){
+			$('#submit').on('click', function(){
+				getData()
+			})
+
+
+			function getData(){
+				if($('#url').val()!==''){
+					$.ajax({
+						url: '/getweb',
+						type: 'GET',
+						data:{
+							url: $('#url').val()
+						}
+					}).done(function(data){
+						console.log('成功')
+					})
+				}else{
+					alert('地址不能为空！')
+				}
+			}
+
+		})
+	</script>
+</body>
+</html>

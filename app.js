@@ -8,9 +8,6 @@ var path       = require('path');
 var bodyParser = require('body-parser');
 var multer     = require('multer'); 
 var cors = require('cors');
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://www.fireyun.cn/smzdm');
-
 
 app.use(cors());//解决跨域问题
 
@@ -32,4 +29,4 @@ require('./routes')(app);
 
 app.listen(3100);
 //启动服务提示语：
-console.log('nodeExcel服务启动：请访问http://localhost:3100')
+console.log('getWebData服务启动：请访问http://localhost:3100')
